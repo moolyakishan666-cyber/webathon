@@ -1,0 +1,403 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXA HOME | Smart Living Simulator</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:Arial,sans-serif;
+  background:#0a1020;color:#edf2ff;
+}
+header{
+  padding:24px 7%;display:flex;justify-content:space-between;
+  align-items:center;border-bottom:1px solid #26324a;
+}
+.logo{font-size:25px;font-weight:800;letter-spacing:2px}
+.logo span{color:#53e0c0}
+.pill{background:#12372f;color:#65f5d4;padding:9px 13px;border-radius:20px;font-size:12px}
+main{max-width:1150px;margin:auto;padding:30px 20px}
+.welcome h1{font-size:32px;margin-bottom:8px}
+.muted{color:#93a4c5;font-size:14px;line-height:1.6}
+.stats{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:15px;margin:25px 0;
+}
+.stat,.room,.panel{
+  background:#111b30;border:1px solid #263550;
+  border-radius:16px;padding:20px;
+}
+.stat small{color:#9aabc8}
+.stat h2{font-size:28px;margin:12px 0 3px}
+.section-title{margin:30px 0 15px;font-size:22px}
+.rooms{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.room-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.room-header h3{margin:0}
+.device-card{
+  background:#17243b;border:1px solid #2b3b58;
+  border-radius:13px;padding:16px;margin-top:12px;
+}
+.device-row{display:flex;align-items:center;gap:12px}
+.device-emoji{
+  width:44px;height:44px;border-radius:12px;
+  background:#263651;display:grid;place-items:center;font-size:23px;
+}
+.device-info{flex:1}
+.device-info h4{margin:0 0 7px}
+.device-status{font-size:12px;color:#98a8c4}
+.device-status.on{color:#5ce7bd}
+.toggle{
+  width:48px;height:27px;border:0;border-radius:20px;
+  background:#44516b;cursor:pointer;padding:4px;
+}
+.toggle span{
+  display:block;width:19px;height:19px;border-radius:50%;
+  background:white;transition:.2s;
+}
+.toggle.active{background:#43d8b1}
+.toggle.active span{transform:translateX(21px)}
+.control{margin-top:18px}
+.control-label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:10px}
+input[type=range]{width:100%;accent-color:#55e1bd;cursor:pointer}
+.device-meta{
+  display:flex;justify-content:space-between;
+  border-top:1px solid #2b3b58;margin-top:14px;padding-top:13px;
+  color:#9aabc8;font-size:12px;
+}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+button.action{
+  border:1px solid #354665;background:#1b2942;color:white;
+  padding:11px 15px;border-radius:9px;cursor:pointer;
+}
+button.action:hover{border-color:#55e1bd}
+button.primary{background:#45d8b2;color:#08151b;font-weight:bold}
+.bottom{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:20px}
+.bar-row{margin:18px 0}
+.bar-title{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px}
+.bar-bg{height:8px;background:#283650;border-radius:20px;overflow:hidden}
+.bar{height:100%;background:#54e1bd;border-radius:20px;transition:width .3s}
+#log{max-height:230px;overflow:auto}
+.log-item{padding:12px 0;border-bottom:1px solid #283650;font-size:13px}
+.log-item small{display:block;color:#9aabc8;margin-top:5px}
+.notice{margin-top:22px;color:#8395b7;font-size:12px;text-align:center}
+@media(max-width:760px){
+  .stats{grid-template-columns:1fr 1fr}
+  .rooms,.bottom{grid-template-columns:1fr}
+  header{padding:20px}
+  .welcome h1{font-size:26px}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">NEXA <span>HOME</span></div>
+  <div class="pill">● SIMULATION ACTIVE</div>
+</header>
+
+<main>
+  <section class="welcome">
+    <h1>Intelligent Living Simulator</h1>
+    <p class="muted">Control your home appliances, monitor estimated power usage, and explore smarter energy management.</p>
+  </section>
+
+  <section class="stats">
+    <div class="stat"><small>Total Appliances</small><h2 id="total">3</h2><small>Connected devices</small></div>
+    <div class="stat"><small>Active Devices</small><h2 id="active">0</h2><small>Currently switched on</small></div>
+    <div class="stat"><small>Current Power</small><h2 id="watts">0 W</h2><small>Estimated consumption</small></div>
+    <div class="stat"><small>Hourly Cost</small><h2 id="cost">₹0.00</h2><small>At ₹8 per kWh</small></div>
+  </section>
+
+  <h2 class="section-title">Your Smart Home</h2>
+
+  <section class="rooms">
+    <div class="room">
+      <div class="room-header">
+        <h3>🏠 Living Room</h3>
+        <span class="muted">2 devices</span>
+      </div>
+
+      <article class="device-card" data-name="Living Room Light" data-type="light" data-watts="12">
+        <div class="device-row">
+          <div class="device-emoji">💡</div>
+          <div class="device-info">
+            <h4>Living Room Light</h4>
+            <div class="device-status">● OFF</div>
+          </div>
+          <button class="toggle" role="switch" aria-checked="false" aria-label="Toggle living room light"><span></span></button>
+        </div>
+        <div class="device-meta"><span>Rated power</span><strong>12 W</strong></div>
+      </article>
+
+      <article class="device-card" data-name="Living Room Fan" data-type="fan" data-watts="70">
+        <div class="device-row">
+          <div class="device-emoji">🌀</div>
+          <div class="device-info">
+            <h4>Living Room Fan</h4>
+            <div class="device-status">● OFF</div>
+          </div>
+          <button class="toggle" role="switch" aria-checked="false" aria-label="Toggle living room fan"><span></span></button>
+        </div>
+        <div class="control">
+          <div class="control-label"><span>Fan speed</span><strong class="range-value">3 / 5</strong></div>
+          <input type="range" min="1" max="5" value="3" aria-label="Fan speed">
+        </div>
+        <div class="device-meta"><span>Rated power</span><strong>70 W</strong></div>
+      </article>
+
+      <article class="device-card" data-name="Living Room AC" data-type="ac" data-watts="1200">
+        <div class="device-row">
+          <div class="device-emoji">❄️</div>
+          <div class="device-info">
+            <h4>Living Room AC</h4>
+            <div class="device-status">● OFF</div>
+          </div>
+          <button class="toggle" role="switch" aria-checked="false" aria-label="Toggle living room AC"><span></span></button>
+        </div>
+        <div class="control">
+          <div class="control-label"><span>Temperature</span><strong class="range-value">24°C</strong></div>
+          <input type="range" min="16" max="30" value="24" aria-label="AC temperature">
+        </div>
+        <div class="device-meta"><span>Assumed power rating</span><strong>1200 W</strong></div>
+      </article>
+    </div>
+
+    <div class="room">
+      <div class="room-header">
+        <h3>🛏️ Bedroom</h3>
+        <span class="muted">1 device</span>
+      </div>
+
+      <article class="device-card" data-name="Bedroom Light" data-type="light" data-watts="9">
+        <div class="device-row">
+          <div class="device-emoji">💡</div>
+          <div class="device-info">
+            <h4>Bedroom Light</h4>
+            <div class="device-status">● OFF</div>
+          </div>
+          <button class="toggle" role="switch" aria-checked="false" aria-label="Toggle bedroom light"><span></span></button>
+        </div>
+        <div class="device-meta"><span>Rated power</span><strong>9 W</strong></div>
+      </article>
+
+      <article class="device-card" data-name="Bedroom Fan" data-type="fan" data-watts="60">
+        <div class="device-row">
+          <div class="device-emoji">🌀</div>
+          <div class="device-info">
+            <h4>Bedroom Fan</h4>
+            <div class="device-status">● OFF</div>
+          </div>
+          <button class="toggle" role="switch" aria-checked="false" aria-label="Toggle bedroom fan"><span></span></button>
+        </div>
+        <div class="control">
+          <div class="control-label"><span>Fan speed</span><strong class="range-value">3 / 5</strong></div>
+          <input type="range" min="1" max="5" value="3" aria-label="Fan speed">
+        </div>
+        <div class="device-meta"><span>Rated power</span><strong>60 W</strong></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-top:20px">
+    <h3>⚡ Quick Controls</h3>
+    <p class="muted">Control all appliances or apply an energy-saving scene.</p>
+    <div class="actions">
+      <button class="action primary" id="allOn">Turn Everything ON</button>
+      <button class="action" id="allOff">Turn Everything OFF</button>
+      <button class="action" id="eco">Eco Mode</button>
+      <button class="action" id="night">Night Mode</button>
+      <button class="action" id="away">Away Mode</button>
+    </div>
+  </section>
+
+  <section class="bottom">
+    <div class="panel">
+      <h3>📊 Power Usage</h3>
+      <p class="muted">Estimated power by appliance. Values update when switches or fan speeds change.</p>
+      <div id="powerBars"></div>
+    </div>
+
+    <div class="panel">
+      <h3>📝 Activity Log</h3>
+      <div id="log"><div class="log-item">System ready<small>All devices initialized in simulation.</small></div></div>
+    </div>
+  </section>
+
+  <p class="notice">NEXA HOME is a simulated demonstration. It does not connect to real appliances or measure actual electricity usage.</p>
+</main>
+
+<script>
+const cards = [...document.querySelectorAll(".device-card")];
+const log = document.getElementById("log");
+
+function devicePower(card) {
+  const isOn = card.querySelector(".toggle").classList.contains("active");
+  if (!isOn) return 0;
+
+  const rated = Number(card.dataset.watts);
+
+  if (card.dataset.type === "fan") {
+    const speed = Number(card.querySelector('input[type="range"]').value);
+    return rated * (0.2 + 0.8 * speed / 5);
+  }
+
+  // AC power is estimated as its rated power while switched on.
+  return rated;
+}
+
+function addLog(title, detail) {
+  const item = document.createElement("div");
+  item.className = "log-item";
+  const heading = document.createElement("strong");
+  heading.textContent = title;
+  const description = document.createElement("small");
+  description.textContent = detail + " • " + new Date().toLocaleTimeString();
+  item.append(heading, description);
+  log.prepend(item);
+
+  while (log.children.length > 12) {
+    log.removeChild(log.lastElementChild);
+  }
+}
+
+function setDevice(card, on) {
+  const toggle = card.querySelector(".toggle");
+  const status = card.querySelector(".device-status");
+  toggle.classList.toggle("active", on);
+  toggle.setAttribute("aria-checked", String(on));
+  status.textContent = on ? "● ON" : "● OFF";
+  status.classList.toggle("on", on);
+}
+
+function updateDashboard() {
+  let active = 0;
+  let totalWatts = 0;
+  const barContainer = document.getElementById("powerBars");
+  barContainer.replaceChildren();
+
+  cards.forEach(card => {
+    const power = devicePower(card);
+    totalWatts += power;
+
+    if (card.querySelector(".toggle").classList.contains("active")) {
+      active++;
+    }
+
+    const row = document.createElement("div");
+    row.className = "bar-row";
+
+    const heading = document.createElement("div");
+    heading.className = "bar-title";
+
+    const name = document.createElement("span");
+    name.textContent = card.dataset.name;
+
+    const value = document.createElement("strong");
+    value.textContent = Math.round(power) + " W";
+
+    heading.append(name, value);
+
+    const bg = document.createElement("div");
+    bg.className = "bar-bg";
+
+    const bar = document.createElement("div");
+    bar.className = "bar";
+    bar.style.width = Math.min(100, power / 1200 * 100) + "%";
+
+    bg.appendChild(bar);
+    row.append(heading, bg);
+    barContainer.appendChild(row);
+  });
+
+  document.getElementById("total").textContent = cards.length;
+  document.getElementById("active").textContent = active;
+  document.getElementById("watts").textContent = Math.round(totalWatts) + " W";
+
+  // ₹8 per kWh; current power converted to estimated cost for one hour.
+  document.getElementById("cost").textContent =
+    "₹" + (totalWatts / 1000 * 8).toFixed(2);
+}
+
+cards.forEach(card => {
+  const toggle = card.querySelector(".toggle");
+  const slider = card.querySelector('input[type="range"]');
+  const valueLabel = card.querySelector(".range-value");
+
+  toggle.addEventListener("click", () => {
+    const turnOn = !toggle.classList.contains("active");
+    setDevice(card, turnOn);
+    updateDashboard();
+    addLog(card.dataset.name + (turnOn ? " switched ON" : " switched OFF"),
+      "Device state updated in simulation");
+  });
+
+  if (slider) {
+    slider.addEventListener("input", () => {
+      if (card.dataset.type === "ac") {
+        valueLabel.textContent = slider.value + "°C";
+        addLog("AC temperature changed",
+          "Simulated temperature set to " + slider.value + "°C");
+      } else {
+        valueLabel.textContent = slider.value + " / 5";
+        addLog("Fan speed changed",
+          "Simulated speed level " + slider.value + " of 5");
+      }
+      updateDashboard();
+    });
+  }
+});
+
+function allOff() {
+  cards.forEach(card => setDevice(card, false));
+  updateDashboard();
+  addLog("All appliances OFF", "All simulated devices switched off");
+}
+
+document.getElementById("allOn").addEventListener("click", () => {
+  cards.forEach(card => setDevice(card, true));
+  updateDashboard();
+  addLog("All appliances ON", "All simulated devices switched on");
+});
+
+document.getElementById("allOff").addEventListener("click", allOff);
+
+document.getElementById("eco").addEventListener("click", () => {
+  cards.forEach(card => {
+    const shouldBeOn =
+      card.dataset.name === "Living Room Light" ||
+      card.dataset.name === "Bedroom Fan";
+
+    setDevice(card, shouldBeOn);
+
+    if (card.dataset.type === "fan" && shouldBeOn) {
+      card.querySelector('input[type="range"]').value = 1;
+      card.querySelector(".range-value").textContent = "1 / 5";
+    }
+  });
+  updateDashboard();
+  addLog("Eco Mode activated", "Selected devices set to a lower-energy configuration");
+});
+
+document.getElementById("night").addEventListener("click", () => {
+  cards.forEach(card => {
+    setDevice(card, card.dataset.name === "Bedroom Light");
+  });
+  updateDashboard();
+  addLog("Night Mode activated", "Bedroom light on; other appliances off");
+});
+
+document.getElementById("away").addEventListener("click", () => {
+  allOff();
+  addLog("Away Mode activated", "All simulated appliances switched off");
+});
+
+updateDashboard();
+</script>
+</body>
+</html>
+
+
